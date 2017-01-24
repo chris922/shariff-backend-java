@@ -26,6 +26,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -46,6 +47,8 @@ import org.shredzone.shariff.target.Xing;
  * @author Richard "Shred" Körber
  */
 public class ShariffBackend {
+	
+    private static final int COUNT_TIMEOUT_MS = 15000;
 
     private final List<Target> targets;
     private final ExecutorService executor;
@@ -174,7 +177,7 @@ public class ShariffBackend {
         for (int ix = 0; ix < futures.size(); ix++) {
             Target target = getTargets().get(ix);
             try {
-                result.put(target.getName(), futures.get(ix).get());
+                result.put(target.getName(), futures.get(ix).get(COUNT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
             } catch (Exception ex) {
                 Logger.getLogger(ShariffBackend.class.getName()).log(
                         Level.WARNING,
